@@ -130,7 +130,7 @@ class FollowJointTrajectory():
             self.rate.sleep()
 
 def callback(data):
-    print(data.goal)
+    print("callbacked")
 
 def main(argv):
 
@@ -139,9 +139,10 @@ def main(argv):
         target=follow_joint_trajectory.publish_state()
     )
     joint_states_pub_thread.start()
+    rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, callback)
+
 
     while not rospy.is_shutdown():
-        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, callback)
         rospy.spin()
 
     joint_states_pub_thread.join()
