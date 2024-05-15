@@ -63,6 +63,7 @@ class FollowJointTrajectory():
             "/dsr01dootion/joint_states", JointState, queue_size=10
         )
 
+        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.callback)
 
 
         # Start action server
@@ -129,8 +130,8 @@ class FollowJointTrajectory():
             self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
 
-def callback(data):
-    print("callbacked")
+    def callback(data):
+        print("callbacked")
 
 def main(argv):
 
@@ -139,7 +140,6 @@ def main(argv):
         target=follow_joint_trajectory.publish_state()
     )
     joint_states_pub_thread.start()
-    rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, callback)
 
 
     while not rospy.is_shutdown():
