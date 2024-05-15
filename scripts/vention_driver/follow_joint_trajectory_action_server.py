@@ -38,7 +38,8 @@ import actionlib
 import rospy
 from control_msgs.msg import (FollowJointTrajectoryAction,
                               FollowJointTrajectoryFeedback,
-                              FollowJointTrajectoryResult)
+                              FollowJointTrajectoryResult,
+                              FollowJointTrajectoryActionGoal)
 # from geometry_msgs.msg import Twist, TwistStamped
 from sensor_msgs.msg import JointState
 
@@ -50,20 +51,22 @@ class FollowJointTrajectory():
         print("init")
 
         # Initialize action server (+ Joint state publisher?)
-        self.prismatic_action_server = actionlib.SimpleActionServer(
-            "dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory",
-            FollowJointTrajectoryAction,
-            self.prismatic_goal_callback,
-            False,
-        )
+        # self.prismatic_action_server = actionlib.SimpleActionServer(
+        #     "dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory",
+        #     FollowJointTrajectoryAction,
+        #     self.prismatic_goal_callback,
+        #     False,
+        # )
+        # self.prismatic_action_client = actionlib.SimpleActionClient('dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
 
         self.joint_state_pub = rospy.Publisher(
             "/dsr01dootion/joint_states", JointState, queue_size=10
         )
 
 
+
         # Start action server
-        self.prismatic_action_server.start()
+        # self.prismatic_action_server.start()
 
         # Initialize any variables
         self.feedback = FollowJointTrajectoryFeedback()
@@ -126,7 +129,8 @@ class FollowJointTrajectory():
             self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
 
-
+def callback(data):
+    print(data.goal)
 
 def main(argv):
 
@@ -137,6 +141,7 @@ def main(argv):
     joint_states_pub_thread.start()
 
     while not rospy.is_shutdown():
+        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, callback)
         rospy.spin()
 
     joint_states_pub_thread.join()
