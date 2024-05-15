@@ -89,16 +89,19 @@ class FollowJointTrajectory():
                     traj_point_velocities.append(goal.trajectory.points[i].velocities[j])
                     time_since_ref.append(goal.trajectory.points[i].time_from_start.to_sec())
 
-        self.feedback_publish_flag = True
-        feedback_thread = threading.Thread(
-            target=self.follow_joint_trajectory_feedback
-        )
-        feedback_thread.start()
+        for i in traj_point_positions:
+            print(i)
+
+        # self.feedback_publish_flag = True
+        # feedback_thread = threading.Thread(
+        #     target=self.follow_joint_trajectory_feedback
+        # )
+        # feedback_thread.start()
 
         #TODO Execute trajectory through vention driver
 
-        self.feedback_publish_flag = False
-        feedback_thread.join()
+        # self.feedback_publish_flag = False
+        # feedback_thread.join()
 
         if success:
             #TODO Can I set succeeded? Without knowing the arm state?
