@@ -47,6 +47,7 @@ from sensor_msgs.msg import JointState
 class FollowJointTrajectory():
     def __init__(self, argv):
         # Any vention related stuff goes here
+        print("init")
 
         # Initialize action server (+ Joint state publisher?)
         self.prismatic_action_server = actionlib.SimpleActionServer(
@@ -74,6 +75,7 @@ class FollowJointTrajectory():
     def prismatic_goal_callback(self, goal):
         #? Why??
         success = True
+        print("callback")
 
         traj_point_positions = []
         traj_point_velocities = []
@@ -82,6 +84,7 @@ class FollowJointTrajectory():
         for i in range(0, len(goal.trajectory.points)):
             for j in range(0, len(goal.trajectory.joint_names)):
                 if goal.trajectory.joint_names[j] == "tower_prismatic":
+                    print("here!")
                     traj_point_positions.append(goal.trajectory.points[i].positions[j])
                     traj_point_velocities.append(goal.trajectory.points[i].velocities[j])
                     time_since_ref.append(goal.trajectory.points[i].time_from_start.to_sec())
@@ -113,10 +116,33 @@ class FollowJointTrajectory():
 
     def publish_state(self):
         joint_state = JointState()
-
+        print("A")
         while not rospy.is_shutdown():
             #todo get joint states through vention driver
 
             self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
 
+
+
+def main(argv):
+
+    follow_joint_trajectory = FollowJointTrajectory(argv)
+    joint_states_pub_thread = threading.Thread(
+        target=follow_joint_trajectory.publish_state()
+    )
+    joint_states_pub_thread.start()
+
+    while not rospy.is_shutdown():
+        rospy.spin()
+
+    joint_states_pub_thread.join()
+    follow_joint_trajectory.disconnect()
+
+
+if __name__ == "__main__":
+    rospy.init_node("follow_joint_trajectory_node")
+    reload(logging)
+    argv = rospy.myargv(argv=sys.argv)
+    if not main(argv[1:]):
+        sys.exit(1)
