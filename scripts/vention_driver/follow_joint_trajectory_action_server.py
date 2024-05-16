@@ -42,7 +42,7 @@ from control_msgs.msg import (FollowJointTrajectoryAction,
                               FollowJointTrajectoryActionGoal)
 # from geometry_msgs.msg import Twist, TwistStamped
 from sensor_msgs.msg import JointState
-from std_srvs.srv import Empty, EmptyResponse
+from std_srvs.srv import Empty
 
 
 #TODO If namespace changes, must be reflected here. Or make it a variable pulled in somehow.
@@ -85,7 +85,7 @@ class FollowJointTrajectory():
         print("found service")
         test = rospy.ServiceProxy('jointservice', Empty)
         print("Proxy instantiated")
-        testagain = test()
+        test()
         print("Past call")
         joint_state = JointState()
         while not rospy.is_shutdown():
