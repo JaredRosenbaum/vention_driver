@@ -85,7 +85,7 @@ class FollowJointTrajectory():
         print("found service")
         test = rospy.ServiceProxy('jointservice', Empty)
         print("Proxy instantiated")
-        test()
+        test(Empty)
         print("Past call")
         joint_state = JointState()
         while not rospy.is_shutdown():
