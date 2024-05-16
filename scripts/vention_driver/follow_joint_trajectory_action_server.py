@@ -42,6 +42,7 @@ from control_msgs.msg import (FollowJointTrajectoryAction,
                               FollowJointTrajectoryActionGoal)
 # from geometry_msgs.msg import Twist, TwistStamped
 from sensor_msgs.msg import JointState
+from std_srvs.srv import Empty, EmptyResponse
 
 
 #TODO If namespace changes, must be reflected here. Or make it a variable pulled in somehow.
@@ -59,6 +60,7 @@ class FollowJointTrajectory():
 
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.callback)
 
+        
 
         # Start action server
 
@@ -78,6 +80,13 @@ class FollowJointTrajectory():
             self.rate.sleep()
 
     def publish_state(self):
+        print("waiting for service")
+        rospy.wait_for_service('jointservice')
+        print("found service")
+        test = rospy.ServiceProxy('jointservice', Empty)
+        print("Proxy instantiated")
+        testagain = test()
+        print("Past call")
         joint_state = JointState()
         while not rospy.is_shutdown():
             #todo get joint states through vention driver
@@ -86,6 +95,7 @@ class FollowJointTrajectory():
             joint_state.position = [0]
             joint_state.velocity = [0]
             joint_state.effort = [0]
+
 
             self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
