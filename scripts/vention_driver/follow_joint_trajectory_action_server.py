@@ -81,6 +81,11 @@ class FollowJointTrajectory():
         joint_state = JointState()
         while not rospy.is_shutdown():
             #todo get joint states through vention driver
+            joint_state.header.stamp = rospy.get_rostime()
+            joint_state.name = "tower_prismatic"
+            joint_state.position = 0
+            joint_state.velocity = 0
+            joint_state.effort = 0
 
             self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
@@ -97,16 +102,15 @@ class FollowJointTrajectory():
                     traj_point_velocities.append(data.goal.trajectory.points[i].velocities[j])
                     time_since_ref.append(data.goal.trajectory.points[i].time_from_start.to_sec())
 
-
         for i in range(0,len(traj_point_positions)):
             print(traj_point_positions[i])
             print(traj_point_velocities[i])
             print(time_since_ref[i])
-
-
+            print('----')
 
         goal = traj_point_positions[-1]
         target_vel = traj_point_velocities[-1]
+        target_time = time_since_ref[-1]
 
 
 def main(argv):
