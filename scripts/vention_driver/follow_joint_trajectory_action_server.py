@@ -81,24 +81,23 @@ class FollowJointTrajectory():
 
     def publish_state(self):
         print("waiting for service")
-        rospy.wait_for_service('jointservice')
         print("found service")
-        test = rospy.ServiceProxy('jointservice', Empty)
-        print("Proxy instantiated")
-        test()
-        print("Past call")
-        # joint_state = JointState()
-        # while not rospy.is_shutdown():
-        #     #todo get joint states through vention driver
-        #     joint_state.header.stamp = rospy.get_rostime()
-        #     joint_state.name = ["tower_prismatic"]
-        #     joint_state.position = [0]
-        #     joint_state.velocity = [0]
-        #     joint_state.effort = [0]
+        rospy.wait_for_service('jointservice')
+        joint_state = JointState()
+        while not rospy.is_shutdown():
+            test = rospy.ServiceProxy('jointservice', Empty)
+            test()
+            print("Service call complete")
+            #todo get joint states through vention driver
+            joint_state.header.stamp = rospy.get_rostime()
+            joint_state.name = ["tower_prismatic"]
+            joint_state.position = [0]
+            joint_state.velocity = [0]
+            joint_state.effort = [0]
 
 
-        #     self.joint_state_pub.publish(joint_state)
-        #     self.rate.sleep()
+            self.joint_state_pub.publish(joint_state)
+            self.rate.sleep()
 
     def callback(self, data):
         traj_point_positions = []
