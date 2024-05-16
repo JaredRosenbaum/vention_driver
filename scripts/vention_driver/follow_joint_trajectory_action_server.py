@@ -89,14 +89,14 @@ class FollowJointTrajectory():
             test()
             print("Service call complete")
             #todo get joint states through vention driver
-            joint_state.header.stamp = rospy.get_rostime()
-            joint_state.name = ["tower_prismatic"]
-            joint_state.position = [0]
-            joint_state.velocity = [0]
-            joint_state.effort = [0]
+            # joint_state.header.stamp = rospy.get_rostime()
+            # joint_state.name = ["tower_prismatic"]
+            # joint_state.position = [0]
+            # joint_state.velocity = [0]
+            # joint_state.effort = [0]
 
 
-            self.joint_state_pub.publish(joint_state)
+            # self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
 
     def callback(self, data):
