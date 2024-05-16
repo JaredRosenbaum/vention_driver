@@ -50,15 +50,9 @@ class FollowJointTrajectory():
         # Any vention related stuff goes here
         print("init")
 
-        # Initialize action server (+ Joint state publisher?)
-        # self.prismatic_action_server = actionlib.SimpleActionServer(
-        #     "dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory",
-        #     FollowJointTrajectoryAction,
-        #     self.prismatic_goal_callback,
-        #     False,
-        # )
-        # self.prismatic_action_client = actionlib.SimpleActionClient('dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
-
+        # Initialize subscriber to action server+ Joint state publisher
+        #! NOTE: THIS METHOD WILL ONLY WORK IN ROS 1. IF PORTING TO ROS 2, WITH THE CHANGES IN HOW ACTIONS WORK, A NEW METHOD WILL BE REQUIRED.
+    
         self.joint_state_pub = rospy.Publisher(
             "/dsr01dootion/joint_states", JointState, queue_size=10
         )
@@ -67,50 +61,12 @@ class FollowJointTrajectory():
 
 
         # Start action server
-        # self.prismatic_action_server.start()
 
         # Initialize any variables
-        self.feedback = FollowJointTrajectoryFeedback()
-        self.result = FollowJointTrajectoryResult()
-        self.feedback_publish_flag = None
+
 
         self.rate = rospy.Rate(10)
     
-    def prismatic_goal_callback(self, goal):
-        #? Why??
-        success = True
-        print("callback")
-
-        traj_point_positions = []
-        traj_point_velocities = []
-        time_since_ref = []
-
-        for i in range(0, len(goal.trajectory.points)):
-            for j in range(0, len(goal.trajectory.joint_names)):
-                if goal.trajectory.joint_names[j] == "tower_prismatic":
-                    print("here!")
-                    traj_point_positions.append(goal.trajectory.points[i].positions[j])
-                    traj_point_velocities.append(goal.trajectory.points[i].velocities[j])
-                    time_since_ref.append(goal.trajectory.points[i].time_from_start.to_sec())
-
-        for i in traj_point_positions:
-            print(i)
-
-        # self.feedback_publish_flag = True
-        # feedback_thread = threading.Thread(
-        #     target=self.follow_joint_trajectory_feedback
-        # )
-        # feedback_thread.start()
-
-        #TODO Execute trajectory through vention driver
-
-        # self.feedback_publish_flag = False
-        # feedback_thread.join()
-
-        if success:
-            #TODO Can I set succeeded? Without knowing the arm state?
-            rospy.loginfo("Successfully executed trajectory")
-            self.prismatic_action_server.set_succeeded(self.result)
         
     def follow_joint_trajectory_feedback(self):
         while self.feedback_publish_flag:
@@ -123,7 +79,6 @@ class FollowJointTrajectory():
 
     def publish_state(self):
         joint_state = JointState()
-        print("A")
         while not rospy.is_shutdown():
             #todo get joint states through vention driver
 
@@ -138,13 +93,21 @@ class FollowJointTrajectory():
         for i in range(0, len(data.goal.trajectory.points)):
             for j in range(0, len(data.goal.trajectory.joint_names)):
                 if data.goal.trajectory.joint_names[j] == "tower_prismatic":
-                    print("here!")
                     traj_point_positions.append(data.goal.trajectory.points[i].positions[j])
                     traj_point_velocities.append(data.goal.trajectory.points[i].velocities[j])
                     time_since_ref.append(data.goal.trajectory.points[i].time_from_start.to_sec())
 
-        for i in traj_point_positions:
-            print(i)
+
+        for i in range(0,len(traj_point_positions)):
+            print(traj_point_positions[i])
+            print(traj_point_velocities[i])
+            print(time_since_ref[i])
+
+
+
+        goal = traj_point_positions[-1]
+        target_vel = traj_point_velocities[-1]
+
 
 def main(argv):
 
