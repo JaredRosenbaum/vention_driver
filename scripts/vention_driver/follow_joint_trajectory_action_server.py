@@ -62,7 +62,7 @@ class FollowJointTrajectory():
         self.moveit_to_humble_pub = rospy.Publisher(
             '/dsr01dootion/dsr_joint_trajectory_controller/humble_command', JointTrajectory, queue_size=10
         )
-        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/humble_command", JointTrajectory, self.donothing)
+        # rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/humble_command", JointTrajectory, self.donothing)
 
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
 
@@ -101,26 +101,8 @@ class FollowJointTrajectory():
 
     def moveit_callback(self, data):
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
-        # traj_point_positions = []
-        # traj_point_velocities = []
-        # time_since_ref = []
-
-        # for i in range(0, len(data.goal.trajectory.points)):
-        #     for j in range(0, len(data.goal.trajectory.joint_names)):
-        #         if data.goal.trajectory.joint_names[j] == "tower_prismatic":
-        #             traj_point_positions.append(data.goal.trajectory.points[i].positions[j])
-        #             traj_point_velocities.append(data.goal.trajectory.points[i].velocities[j])
-        #             time_since_ref.append(data.goal.trajectory.points[i].time_from_start.to_sec())
-
-        # for i in range(0,len(traj_point_positions)):
-        #     print(traj_point_positions[i])
-        #     print(traj_point_velocities[i])
-        #     print(time_since_ref[i])
-        #     print('----')
-
-        # goal = traj_point_positions[-1]
-        # target_vel = traj_point_velocities[-1]
-        # target_time = time_since_ref[-1]
+        return
+        
         
 
 
