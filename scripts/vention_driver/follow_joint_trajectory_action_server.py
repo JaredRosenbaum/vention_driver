@@ -43,6 +43,7 @@ from control_msgs.msg import (FollowJointTrajectoryAction,
 # from geometry_msgs.msg import Twist, TwistStamped
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Empty
+from trajectory_msgs.msg import JointTrajectory
 
 
 #TODO If namespace changes, must be reflected here. Or make it a variable pulled in somehow.
@@ -58,7 +59,11 @@ class FollowJointTrajectory():
             "/dsr01dootion/joint_states", JointState, queue_size=10
         )
 
-        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.callback)
+        self.moveit_to_humble_pub = rospy.Publisher(
+            '/dsr01dootion/dsr_joint_trajectory_controller/humble_command', JointTrajectory, queue_size=10
+        )
+
+        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
 
         
 
@@ -67,18 +72,9 @@ class FollowJointTrajectory():
         # Initialize any variables
 
 
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(2)
     
         
-    def follow_joint_trajectory_feedback(self):
-        while self.feedback_publish_flag:
-            # get joint states
-            #TODO rest
-            self.feedback.header.stamp = rospy.Time()
-
-            # self.prismatic_action_server.publish_feedback(self.feedback) #todo uncomment once populated properly
-            self.rate.sleep()
-
     def publish_state(self):
         print("waiting for service")
         print("found service")
@@ -99,27 +95,29 @@ class FollowJointTrajectory():
             # self.joint_state_pub.publish(joint_state)
             self.rate.sleep()
 
-    def callback(self, data):
-        traj_point_positions = []
-        traj_point_velocities = []
-        time_since_ref = []
+    def moveit_callback(self, data):
+        self.moveit_to_humble_pub.publish(data.goal.trajectory)
+        # traj_point_positions = []
+        # traj_point_velocities = []
+        # time_since_ref = []
 
-        for i in range(0, len(data.goal.trajectory.points)):
-            for j in range(0, len(data.goal.trajectory.joint_names)):
-                if data.goal.trajectory.joint_names[j] == "tower_prismatic":
-                    traj_point_positions.append(data.goal.trajectory.points[i].positions[j])
-                    traj_point_velocities.append(data.goal.trajectory.points[i].velocities[j])
-                    time_since_ref.append(data.goal.trajectory.points[i].time_from_start.to_sec())
+        # for i in range(0, len(data.goal.trajectory.points)):
+        #     for j in range(0, len(data.goal.trajectory.joint_names)):
+        #         if data.goal.trajectory.joint_names[j] == "tower_prismatic":
+        #             traj_point_positions.append(data.goal.trajectory.points[i].positions[j])
+        #             traj_point_velocities.append(data.goal.trajectory.points[i].velocities[j])
+        #             time_since_ref.append(data.goal.trajectory.points[i].time_from_start.to_sec())
 
-        for i in range(0,len(traj_point_positions)):
-            print(traj_point_positions[i])
-            print(traj_point_velocities[i])
-            print(time_since_ref[i])
-            print('----')
+        # for i in range(0,len(traj_point_positions)):
+        #     print(traj_point_positions[i])
+        #     print(traj_point_velocities[i])
+        #     print(time_since_ref[i])
+        #     print('----')
 
-        goal = traj_point_positions[-1]
-        target_vel = traj_point_velocities[-1]
-        target_time = time_since_ref[-1]
+        # goal = traj_point_positions[-1]
+        # target_vel = traj_point_velocities[-1]
+        # target_time = time_since_ref[-1]
+        
 
 
 def main(argv):
