@@ -50,7 +50,7 @@ from trajectory_msgs.msg import JointTrajectory
 class FollowJointTrajectory():
     def __init__(self, argv):
         # Any vention related stuff goes here
-        print("init")
+        print("Vention noetic-side action server instantiated")
 
         # Initialize subscriber to action server+ Joint state publisher
         #! NOTE: THIS METHOD WILL ONLY WORK IN ROS 1. IF PORTING TO ROS 2, WITH THE CHANGES IN HOW ACTIONS WORK, A NEW METHOD WILL BE REQUIRED.
@@ -80,14 +80,11 @@ class FollowJointTrajectory():
         pass
         
     def publish_state(self):
-        print("waiting for service")
-        print("found service")
         rospy.wait_for_service('jointservice')
         joint_state = JointState()
         while not rospy.is_shutdown():
             test = rospy.ServiceProxy('jointservice', Empty)
             test()
-            print("Service call complete")
             #todo get joint states through vention driver
             # joint_state.header.stamp = rospy.get_rostime()
             # joint_state.name = ["tower_prismatic"]
