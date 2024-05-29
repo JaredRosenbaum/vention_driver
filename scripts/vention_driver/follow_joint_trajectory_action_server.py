@@ -83,6 +83,7 @@ class FollowJointTrajectory():
         rospy.wait_for_service('jointservice')
         joint_state = JointState()
         while not rospy.is_shutdown():
+            print("I'm in the publish_state loop")
             test = rospy.ServiceProxy('jointservice', Empty)
             test()
             #todo get joint states through vention driver
