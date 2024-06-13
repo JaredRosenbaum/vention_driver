@@ -63,10 +63,13 @@ class FollowJointTrajectory():
             '/dsr01dootion/dsr_joint_trajectory_controller/humble_command', JointTrajectory, queue_size=10
         )
         # rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/humble_command", JointTrajectory, self.donothing)
+        self.servo_to_arm_pub = rospy.Publisher(
+            '/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal', FollowJointTrajectoryActionGoal, queue_size=10
+        )
 
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
 
-        
+        rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
 
         # Start action server
 
@@ -100,6 +103,12 @@ class FollowJointTrajectory():
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
         return
         
+    def servo_callback(self, data):
+        message = FollowJointTrajectoryActionGoal()
+        message.goal = data
+        self.servo_to_arm_pub.publish(message)
+        return
+
         
 
 
