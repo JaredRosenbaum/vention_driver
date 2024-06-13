@@ -105,8 +105,8 @@ class FollowJointTrajectory():
         
     def servo_callback(self, data):
         message = FollowJointTrajectoryActionGoal()
-        print(message.goal.trajectory.points)
-        # message.goal.trajectory.points[0] = message.goal.trajectory.points[0]-1
+        print(data.goal.trajectory.points)
+        # data.goal.trajectory.points[0] = data.goal.trajectory.points[0]-1
         message.goal.trajectory = data
         self.servo_to_arm_pub.publish(message)
         print("Message published")
