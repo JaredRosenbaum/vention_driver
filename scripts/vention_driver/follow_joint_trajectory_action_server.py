@@ -106,7 +106,7 @@ class FollowJointTrajectory():
     def servo_callback(self, data):
         print("Callback triggered")
         message = FollowJointTrajectoryActionGoal()
-        message.goal = data
+        message.goal.trajectory = data
         print("Message populated")
         self.servo_to_arm_pub.publish(message)
         print("Message published")
