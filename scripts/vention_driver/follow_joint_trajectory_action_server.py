@@ -109,11 +109,11 @@ class FollowJointTrajectory():
         message = FollowJointTrajectoryActionGoal()
         print(data.points[0].positions)
         message.goal.trajectory = data
-        if (self.count == 6):
-            self.servo_to_arm_pub.publish(message)
-            print("Message published")
-            self.count = 0
-        self.count = self.count+1
+        # if (self.count == 6):
+        self.servo_to_arm_pub.publish(message)
+        print("Message published")
+            # self.count = 0
+        # self.count = self.count+1
         return
 
         
