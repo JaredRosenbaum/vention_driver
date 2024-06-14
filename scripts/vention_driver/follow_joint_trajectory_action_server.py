@@ -72,36 +72,35 @@ class FollowJointTrajectory():
         rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
         rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
         self.states = 0
+        self.rate = rospy.Rate(2)
 
         # Start action server
 
         # Initialize any variables
 
 
-        self.rate = rospy.Rate(2)
         
-        self.count = 0
     
 
     # def donothing(self):
     #     pass
         
-    # def publish_state(self):
-    #     rospy.wait_for_service('jointservice')
-    #     joint_state = JointState()
-    #     while not rospy.is_shutdown():
-    #         test = rospy.ServiceProxy('jointservice', Empty)
-    #         test()
-    #         #todo get joint states through vention driver
-    #         # joint_state.header.stamp = rospy.get_rostime()
-    #         # joint_state.name = ["tower_prismatic"]
-    #         # joint_state.position = [0]
-    #         # joint_state.velocity = [0]
-    #         # joint_state.effort = [0]
+    def publish_state(self):
+        rospy.wait_for_service('jointservice')
+        joint_state = JointState()
+        while not rospy.is_shutdown():
+            test = rospy.ServiceProxy('jointservice', Empty)
+            test()
+            #todo get joint states through vention driver
+            # joint_state.header.stamp = rospy.get_rostime()
+            # joint_state.name = ["tower_prismatic"]
+            # joint_state.position = [0]
+            # joint_state.velocity = [0]
+            # joint_state.effort = [0]
 
 
-    #         # self.joint_state_pub.publish(joint_state)
-    #         self.rate.sleep()
+            # self.joint_state_pub.publish(joint_state)
+            self.rate.sleep()
 
     def moveit_callback(self, data):
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
