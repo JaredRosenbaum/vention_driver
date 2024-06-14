@@ -55,9 +55,9 @@ class FollowJointTrajectory():
         # Initialize subscriber to action server+ Joint state publisher
         #! NOTE: THIS METHOD WILL ONLY WORK IN ROS 1. IF PORTING TO ROS 2, WITH THE CHANGES IN HOW ACTIONS WORK, A NEW METHOD WILL BE REQUIRED.
     
-        self.joint_state_pub = rospy.Publisher(
-            "/dsr01dootion/joint_states", JointState, queue_size=10
-        )
+        # self.joint_state_pub = rospy.Publisher(
+        #     "/dsr01dootion/joint_states", JointState, queue_size=10
+        # )
 
         self.moveit_to_humble_pub = rospy.Publisher(
             '/dsr01dootion/dsr_joint_trajectory_controller/humble_command', JointTrajectory, queue_size=10
@@ -70,6 +70,8 @@ class FollowJointTrajectory():
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
 
         rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
+        rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
+        self.states = 0
 
         # Start action server
 
@@ -81,25 +83,25 @@ class FollowJointTrajectory():
         self.count = 0
     
 
-    def donothing(self):
-        pass
+    # def donothing(self):
+    #     pass
         
-    def publish_state(self):
-        rospy.wait_for_service('jointservice')
-        joint_state = JointState()
-        while not rospy.is_shutdown():
-            test = rospy.ServiceProxy('jointservice', Empty)
-            test()
-            #todo get joint states through vention driver
-            # joint_state.header.stamp = rospy.get_rostime()
-            # joint_state.name = ["tower_prismatic"]
-            # joint_state.position = [0]
-            # joint_state.velocity = [0]
-            # joint_state.effort = [0]
+    # def publish_state(self):
+    #     rospy.wait_for_service('jointservice')
+    #     joint_state = JointState()
+    #     while not rospy.is_shutdown():
+    #         test = rospy.ServiceProxy('jointservice', Empty)
+    #         test()
+    #         #todo get joint states through vention driver
+    #         # joint_state.header.stamp = rospy.get_rostime()
+    #         # joint_state.name = ["tower_prismatic"]
+    #         # joint_state.position = [0]
+    #         # joint_state.velocity = [0]
+    #         # joint_state.effort = [0]
 
 
-            # self.joint_state_pub.publish(joint_state)
-            self.rate.sleep()
+    #         # self.joint_state_pub.publish(joint_state)
+    #         self.rate.sleep()
 
     def moveit_callback(self, data):
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
@@ -109,11 +111,15 @@ class FollowJointTrajectory():
         message = FollowJointTrajectoryActionGoal()
         print(data.points[0].positions)
         message.goal.trajectory = data
-        # if (self.count == 6):
-        self.servo_to_arm_pub.publish(message)
-        print("Message published")
-            # self.count = 0
-        # self.count = self.count+1
+        if (abs(data.points[0].positions-self.states) < 0.01):
+            print(abs(data.points[0].positions-self.states))
+            self.servo_to_arm_pub.publish(message)
+            print("Message published")
+
+        return
+    
+    def updatestates_callback(self, data):
+        self.states = sum(data.position)
         return
 
         
