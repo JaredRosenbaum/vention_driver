@@ -77,6 +77,8 @@ class FollowJointTrajectory():
 
 
         self.rate = rospy.Rate(2)
+        
+        self.count = 0
     
 
     def donothing(self):
@@ -105,11 +107,13 @@ class FollowJointTrajectory():
         
     def servo_callback(self, data):
         message = FollowJointTrajectoryActionGoal()
-        print(data.goal.trajectory.points)
-        # data.goal.trajectory.points[0] = data.goal.trajectory.points[0]-1
+        print(data.points[0].positions)
         message.goal.trajectory = data
-        self.servo_to_arm_pub.publish(message)
-        print("Message published")
+        if (self.count == 6):
+            self.servo_to_arm_pub.publish(message)
+            print("Message published")
+            self.count = 0
+        self.count = self.count+1
         return
 
         
