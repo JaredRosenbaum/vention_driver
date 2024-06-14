@@ -110,8 +110,8 @@ class FollowJointTrajectory():
         message = FollowJointTrajectoryActionGoal()
         print(data.points[0].positions)
         message.goal.trajectory = data
-        if (abs(data.points[0].positions-self.states) < 0.01):
-            print(abs(data.points[0].positions-self.states))
+        if (abs(sum(data.points[0].positions)-self.states) > 0.00001):
+            print(abs(sum(data.points[0].positions)-self.states))
             self.servo_to_arm_pub.publish(message)
             print("Message published")
 
