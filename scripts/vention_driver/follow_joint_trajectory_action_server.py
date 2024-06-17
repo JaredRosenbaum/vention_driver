@@ -86,21 +86,22 @@ class FollowJointTrajectory():
     #     pass
         
     def publish_state(self):
-        rospy.wait_for_service('jointservice')
-        joint_state = JointState()
-        while not rospy.is_shutdown():
-            test = rospy.ServiceProxy('jointservice', Empty)
-            test()
-            #todo get joint states through vention driver
-            # joint_state.header.stamp = rospy.get_rostime()
-            # joint_state.name = ["tower_prismatic"]
-            # joint_state.position = [0]
-            # joint_state.velocity = [0]
-            # joint_state.effort = [0]
+        # rospy.wait_for_service('jointservice')
+        # joint_state = JointState()
+        # while not rospy.is_shutdown():
+        #     test = rospy.ServiceProxy('jointservice', Empty)
+        #     test()
+        #     #todo get joint states through vention driver
+        #     # joint_state.header.stamp = rospy.get_rostime()
+        #     # joint_state.name = ["tower_prismatic"]
+        #     # joint_state.position = [0]
+        #     # joint_state.velocity = [0]
+        #     # joint_state.effort = [0]
 
 
-            # self.joint_state_pub.publish(joint_state)
-            self.rate.sleep()
+        #     # self.joint_state_pub.publish(joint_state)
+        #     self.rate.sleep()
+        return
 
     def moveit_callback(self, data):
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
