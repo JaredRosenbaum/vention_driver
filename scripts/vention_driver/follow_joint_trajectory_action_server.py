@@ -71,30 +71,24 @@ class FollowJointTrajectory():
 
         rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
         rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
+        # Might be uneccessary? I forget my python basics lol
         self.states = 0
+        self.ventionstate = 0
+        self.doosanstate = 0
+
+
         self.rate = rospy.Rate(2)
 
-        # Start action server
-
-        # Initialize any variables
-
-
-        
-    
-
-    # def donothing(self):
-    #     pass
         
     def publish_state(self):
         rospy.wait_for_service('jointservice')
         joint_state = JointState()
         while not rospy.is_shutdown():
             test = rospy.ServiceProxy('jointservice', Empty)
-            #todo add error handling?
-            try:
-                test()
-            except:
-                print("Failure")
+            #todo add error handling? note: Maybe not
+            #todo need a way to not crash if the servo input is cancelled. need to track down where thats coming from
+            #! This carries on to 
+            test()
             #todo get joint states through vention driver
             # joint_state.header.stamp = rospy.get_rostime()
             # joint_state.name = ["tower_prismatic"]
@@ -124,7 +118,11 @@ class FollowJointTrajectory():
     def updatestates_callback(self, data):
         #todo handle cases for arm only or vention only
         # if vention, update vention #, if doosan, update doosan #, then sum thte two at the end
-        self.states = sum(data.position)
+        if len(data.name) == 1:
+            self.ventionstate = sum(data.position)
+        else:
+            self.doosanstate = sum(data.position)
+        self.states = self.ventionstate + self.doosanstate
         return
 
         
