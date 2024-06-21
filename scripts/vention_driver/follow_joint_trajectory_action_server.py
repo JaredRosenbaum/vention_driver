@@ -90,7 +90,11 @@ class FollowJointTrajectory():
         joint_state = JointState()
         while not rospy.is_shutdown():
             test = rospy.ServiceProxy('jointservice', Empty)
-            test()
+            #todo add error handling?
+            try:
+                test()
+            except:
+                print("Failure")
             #todo get joint states through vention driver
             # joint_state.header.stamp = rospy.get_rostime()
             # joint_state.name = ["tower_prismatic"]
@@ -118,6 +122,8 @@ class FollowJointTrajectory():
         return
     
     def updatestates_callback(self, data):
+        #todo handle cases for arm only or vention only
+        # if vention, update vention #, if doosan, update doosan #, then sum thte two at the end
         self.states = sum(data.position)
         return
 
