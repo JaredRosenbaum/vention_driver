@@ -45,6 +45,12 @@ from sensor_msgs.msg import JointState
 from std_srvs.srv import Empty
 from trajectory_msgs.msg import JointTrajectory
 
+import moveit_commander
+import moveit_msgs.msg
+import geometry_msgs.msg
+from std_msgs.msg import String
+from moveit_commander.conversions import pose_to_list
+
 
 #TODO If namespace changes, must be reflected here. Or make it a variable pulled in somehow.
 class FollowJointTrajectory():
@@ -62,25 +68,30 @@ class FollowJointTrajectory():
         self.moveit_to_humble_pub = rospy.Publisher(
             '/dsr01dootion/dsr_joint_trajectory_controller/humble_command', JointTrajectory, queue_size=10
         )
-        # rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/humble_command", JointTrajectory, self.donothing)
         self.servo_to_arm_pub = rospy.Publisher(
             '/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal', FollowJointTrajectoryActionGoal, queue_size=10
         )
 
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
-
         rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
         rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
-        # Might be uneccessary? I forget my python basics lol
+
+
+        # Instantiate variables
         self.states = 0
         self.ventionstate = 0
         self.doosanstate = 0
-
-
         self.rate = rospy.Rate(2)
+
+        moveit_commander.roscpp_initialize(sys.argv)
+        self.robot = moveit_commander.RobotCommander()
+        self.scene = moveit_commander.PlanningSceneInterface()
+        group_name = "doosan_only"
+        self.move_group = moveit_commander.MoveGroupCommander(group_name)
 
         
     def publish_state(self):
+        #TODO Is there any reason not to completely redo this, and instead have the vention wrapper intercept joint state messages and complete them?
         rospy.wait_for_service('jointservice')
         joint_state = JointState()
         while not rospy.is_shutdown():
@@ -95,24 +106,24 @@ class FollowJointTrajectory():
             # joint_state.position = [0]
             # joint_state.velocity = [0]
             # joint_state.effort = [0]
-
-
-            # self.joint_state_pub.publish(joint_state)
+            # self.joint_state_pub.publish(joint_state) 
             self.rate.sleep()
 
     def moveit_callback(self, data):
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
         return
         
+
+    # TODO for commands with vention only, populate message with current arm positions
     def servo_callback(self, data):
         message = FollowJointTrajectoryActionGoal()
         print(data.points[0].positions)
         message.goal.trajectory = data
+        #todo states must be wrong...
         if (abs(sum(data.points[0].positions)-self.states) > 0.00001):
             print(abs(sum(data.points[0].positions)-self.states))
             self.servo_to_arm_pub.publish(message)
             print("Message published")
-
         return
     
     def updatestates_callback(self, data):
@@ -124,7 +135,25 @@ class FollowJointTrajectory():
             self.doosanstate = sum(data.position)
         self.states = self.ventionstate + self.doosanstate
         return
+    
 
+    #* A geometry_msgs/pose is receivied, published by ros2. That message should then be packaged up into moveit and 
+    def moveitToGoal(self, data):
+        # * data = geometry_msgs/pose
+        pose_goal = geometry_msgs.msg.Pose()
+        pose_goal.orientation.w = data.orientation.w
+        pose_goal.position.x = data.position.x
+        pose_goal.position.y = data.position.y
+        pose_goal.position.z = data.position.z
+
+        self.move_group.set_pose_target(pose_goal)
+        success = self.move_group.go(wait=True)
+        # Calling `stop()` ensures that there is no residual movement
+        self.move_group.stop()
+        # It is always good to clear your targets after planning with poses.
+        # Note: there is no equivalent function for clear_joint_value_targets().
+        self.move_group.clear_pose_targets()
+        return
         
 
 
@@ -146,6 +175,7 @@ def main(argv):
 
 if __name__ == "__main__":
     rospy.init_node("follow_joint_trajectory_node")
+    
     reload(logging)
     argv = rospy.myargv(argv=sys.argv)
     if not main(argv[1:]):
