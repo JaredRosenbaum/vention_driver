@@ -34,6 +34,9 @@ import sys
 import threading
 from importlib import reload
 
+import os
+os.environ["ROS_NAMESPACE"] = "/dsr01dootion"
+
 import actionlib
 import rospy
 from control_msgs.msg import (FollowJointTrajectoryAction,
@@ -44,7 +47,7 @@ from control_msgs.msg import (FollowJointTrajectoryAction,
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Empty
 from trajectory_msgs.msg import JointTrajectory
-from geometry_msgs import Pose
+from geometry_msgs.msg import Pose
 
 import moveit_commander
 import moveit_msgs.msg
@@ -142,6 +145,7 @@ class FollowJointTrajectory():
     #* A geometry_msgs/pose is receivied, published by ros2. That message should then be packaged up into moveit and 
     def moveitToGoal(self, data):
         # * data = geometry_msgs/pose
+        #todo should pose_goal just equal data?
         pose_goal = geometry_msgs.msg.Pose()
         pose_goal.orientation.w = data.orientation.w
         pose_goal.position.x = data.position.x
