@@ -87,6 +87,7 @@ class FollowJointTrajectory():
         self.ventionstate = 0
         self.doosanstate = 0
         self.rate = rospy.Rate(2)
+        print("init")
 
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot = moveit_commander.RobotCommander()
@@ -177,6 +178,7 @@ def main(argv):
 
 
     while not rospy.is_shutdown():
+        print("spin")
         rospy.spin()
 
     # joint_states_pub_thread.join()
