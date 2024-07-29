@@ -9,6 +9,10 @@ project(vention_driver)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+    moveit_core
+    moveit_visual_tools
+    moveit_ros_planning
+    moveit_ros_planning_interface
 )
 
 ## System dependencies are found with CMake's conventions
