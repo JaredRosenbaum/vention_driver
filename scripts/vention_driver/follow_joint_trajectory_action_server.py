@@ -34,8 +34,13 @@ import sys
 import threading
 from importlib import reload
 
-import os
-os.environ["ROS_NAMESPACE"] = "/dsr01dootion"
+# import os
+# os.environ["ROS_NAMESPACE"] = "/dsr01dootion"
+# import moveit_commander
+# import moveit_msgs.msg
+# import geometry_msgs.msg
+# from std_msgs.msg import String
+# from moveit_commander.conversions import pose_to_list
 
 import actionlib
 import rospy
@@ -49,11 +54,6 @@ from std_srvs.srv import Empty
 from trajectory_msgs.msg import JointTrajectory
 from geometry_msgs.msg import Pose
 
-import moveit_commander
-import moveit_msgs.msg
-import geometry_msgs.msg
-from std_msgs.msg import String
-from moveit_commander.conversions import pose_to_list
 
 
 #TODO If namespace changes, must be reflected here. Or make it a variable pulled in somehow.
@@ -88,11 +88,11 @@ class FollowJointTrajectory():
         self.doosanstate = 0
         self.rate = rospy.Rate(2)
 
-        moveit_commander.roscpp_initialize(sys.argv)
-        self.robot = moveit_commander.RobotCommander()
-        self.scene = moveit_commander.PlanningSceneInterface()
-        group_name = "doosan_only"
-        self.move_group = moveit_commander.MoveGroupCommander(group_name)
+        # moveit_commander.roscpp_initialize(sys.argv)
+        # self.robot = moveit_commander.RobotCommander()
+        # self.scene = moveit_commander.PlanningSceneInterface()
+        # group_name = "doosan_only"
+        # self.move_group = moveit_commander.MoveGroupCommander(group_name)
 
         
     def publish_state(self):
@@ -142,24 +142,24 @@ class FollowJointTrajectory():
         return
     
 
-    #* A geometry_msgs/pose is receivied, published by ros2. That message should then be packaged up into moveit and 
-    def moveitToGoal(self, data):
-        # * data = geometry_msgs/pose
-        #todo should pose_goal just equal data?
-        pose_goal = geometry_msgs.msg.Pose()
-        pose_goal.orientation.w = data.orientation.w
-        pose_goal.position.x = data.position.x
-        pose_goal.position.y = data.position.y
-        pose_goal.position.z = data.position.z
+    # #* A geometry_msgs/pose is receivied, published by ros2. That message should then be packaged up into moveit and 
+    # def moveitToGoal(self, data):
+    #     # * data = geometry_msgs/pose
+    #     #todo should pose_goal just equal data?
+    #     pose_goal = geometry_msgs.msg.Pose()
+    #     pose_goal.orientation.w = data.orientation.w
+    #     pose_goal.position.x = data.position.x
+    #     pose_goal.position.y = data.position.y
+    #     pose_goal.position.z = data.position.z
 
-        self.move_group.set_pose_target(pose_goal)
-        success = self.move_group.go(wait=True)
-        # Calling `stop()` ensures that there is no residual movement
-        self.move_group.stop()
-        # It is always good to clear your targets after planning with poses.
-        # Note: there is no equivalent function for clear_joint_value_targets().
-        self.move_group.clear_pose_targets()
-        return
+    #     self.move_group.set_pose_target(pose_goal)
+    #     success = self.move_group.go(wait=True)
+    #     # Calling `stop()` ensures that there is no residual movement
+    #     self.move_group.stop()
+    #     # It is always good to clear your targets after planning with poses.
+    #     # Note: there is no equivalent function for clear_joint_value_targets().
+    #     self.move_group.clear_pose_targets()
+    #     return
         
 
 
