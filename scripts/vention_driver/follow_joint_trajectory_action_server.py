@@ -146,6 +146,7 @@ class FollowJointTrajectory():
     def moveitToGoal(self, data):
         # * data = geometry_msgs/pose
         #todo should pose_goal just equal data?
+        print("Moveit goal received!")
         pose_goal = geometry_msgs.msg.Pose()
         pose_goal.orientation.w = data.orientation.w
         pose_goal.position.x = data.position.x
@@ -154,11 +155,13 @@ class FollowJointTrajectory():
 
         self.move_group.set_pose_target(pose_goal)
         success = self.move_group.go(wait=True)
+        print("Movement should be complete")
         # Calling `stop()` ensures that there is no residual movement
         self.move_group.stop()
         # It is always good to clear your targets after planning with poses.
         # Note: there is no equivalent function for clear_joint_value_targets().
         self.move_group.clear_pose_targets()
+        print("The boolean would be published here.")
         return
         
 
