@@ -75,6 +75,9 @@ class FollowJointTrajectory():
         self.servo_to_arm_pub = rospy.Publisher(
             '/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal', FollowJointTrajectoryActionGoal, queue_size=10
         )
+        self.moveit_success_pub = rospy.Publisher(
+            '/surface_repair2/moveit_success', bool, queue_size=10
+        )
 
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
         rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
@@ -162,6 +165,7 @@ class FollowJointTrajectory():
         # Note: there is no equivalent function for clear_joint_value_targets().
         self.move_group.clear_pose_targets()
         print("The boolean would be published here.")
+        self.moveit_success_pub.publish(True)
         return
         
 
