@@ -48,6 +48,7 @@ from sensor_msgs.msg import JointState
 from std_srvs.srv import Empty
 from trajectory_msgs.msg import JointTrajectory
 from geometry_msgs.msg import Pose
+from std_msgs.msg import Bool
 
 import moveit_commander
 import moveit_msgs.msg
@@ -76,7 +77,7 @@ class FollowJointTrajectory():
             '/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal', FollowJointTrajectoryActionGoal, queue_size=10
         )
         self.moveit_success_pub = rospy.Publisher(
-            '/surface_repair2/moveit_success', bool, queue_size=10
+            '/surface_repair2/moveit_success', Bool, queue_size=10
         )
 
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
