@@ -79,7 +79,7 @@ class FollowJointTrajectory():
         rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
         rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
         rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
-        rospy.Subscriber("/surface_repair2/moveitPoseGoal", Pose, self.moveitToGoal)
+        #rospy.Subscriber("/surface_repair2/moveitPoseGoal", Pose, self.moveitToGoal)
 
 
         # Instantiate variables
