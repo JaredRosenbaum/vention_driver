@@ -76,9 +76,9 @@ class FollowJointTrajectory():
             '/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal', FollowJointTrajectoryActionGoal, queue_size=10
         )
 
-        # rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
-        # rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
-        # rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
+        rospy.Subscriber("/dsr01dootion/dsr_joint_trajectory_controller/follow_joint_trajectory/goal", FollowJointTrajectoryActionGoal, self.moveit_callback)
+        rospy.Subscriber("/joint_group_position_controller/command", JointTrajectory, self.servo_callback)
+        rospy.Subscriber("/dsr01dootion/joint_states", JointState, self.updatestates_callback)
         rospy.Subscriber("/surface_repair2/moveitPoseGoal", Pose, self.moveitToGoal)
 
 
@@ -87,7 +87,6 @@ class FollowJointTrajectory():
         self.ventionstate = 0
         self.doosanstate = 0
         self.rate = rospy.Rate(2)
-        print("init")
 
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot = moveit_commander.RobotCommander()
@@ -98,23 +97,22 @@ class FollowJointTrajectory():
         
     def publish_state(self):
         #TODO Is there any reason not to completely redo this, and instead have the vention wrapper intercept joint state messages and complete them?
-        # rospy.wait_for_service('jointservice')
-        # joint_state = JointState()
-        # while not rospy.is_shutdown():
-        #     test = rospy.ServiceProxy('jointservice', Empty)
-        #     #todo add error handling? note: Maybe not
-        #     #todo need a way to not crash if the servo input is cancelled. need to track down where thats coming from
-        #     #! This carries on to 
-        #     test()
-        #     #todo get joint states through vention driver
-        #     # joint_state.header.stamp = rospy.get_rostime()
-        #     # joint_state.name = ["tower_prismatic"]
-        #     # joint_state.position = [0]
-        #     # joint_state.velocity = [0]
-        #     # joint_state.effort = [0]
-        #     # self.joint_state_pub.publish(joint_state) 
-        #     self.rate.sleep()
-        return
+        rospy.wait_for_service('jointservice')
+        joint_state = JointState()
+        while not rospy.is_shutdown():
+            test = rospy.ServiceProxy('jointservice', Empty)
+            #todo add error handling? note: Maybe not
+            #todo need a way to not crash if the servo input is cancelled. need to track down where thats coming from
+            #! This carries on to 
+            test()
+            #todo get joint states through vention driver
+            # joint_state.header.stamp = rospy.get_rostime()
+            # joint_state.name = ["tower_prismatic"]
+            # joint_state.position = [0]
+            # joint_state.velocity = [0]
+            # joint_state.effort = [0]
+            # self.joint_state_pub.publish(joint_state) 
+            self.rate.sleep()
 
     def moveit_callback(self, data):
         self.moveit_to_humble_pub.publish(data.goal.trajectory)
@@ -171,17 +169,16 @@ class FollowJointTrajectory():
 def main(argv):
 
     follow_joint_trajectory = FollowJointTrajectory(argv)
-    # joint_states_pub_thread = threading.Thread(
-    #     target=follow_joint_trajectory.publish_state()
-    # )
-    # joint_states_pub_thread.start()
+    joint_states_pub_thread = threading.Thread(
+        target=follow_joint_trajectory.publish_state()
+    )
+    joint_states_pub_thread.start()
 
 
     while not rospy.is_shutdown():
-        print("spin")
         rospy.spin()
 
-    # joint_states_pub_thread.join()
+    joint_states_pub_thread.join()
     follow_joint_trajectory.disconnect()
 
 
