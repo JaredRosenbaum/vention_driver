@@ -48,19 +48,19 @@
   <!--   <test_depend>gtest</test_depend> -->
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
-  <build_depend>moveit_core</build_depend>
+  <!-- <build_depend>moveit_core</build_depend>
   <build_depend>moveit_ros_planning_interface</build_depend>
-  <build_depend>moveit_ros_perception</build_depend>
+  <build_depend>moveit_ros_perception</build_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rospy</build_depend>
   <build_export_depend>rospy</build_export_depend>
   <exec_depend>rospy</exec_depend>
-  <exec_depend>moveit_core</exec_depend>
+  <!-- <exec_depend>moveit_core</exec_depend>
   <exec_depend>moveit_commander</exec_depend>
   <exec_depend>moveit_fake_controller_manager</exec_depend>
   <exec_depend>moveit_ros_planning_interface</exec_depend>
   <exec_depend>moveit_ros_perception</exec_depend>
-  <exec_depend>moveit_visual_tools</exec_depend>
+  <exec_depend>moveit_visual_tools</exec_depend> -->
 
 
   <!-- The export tag contains other, unspecified, tags -->
