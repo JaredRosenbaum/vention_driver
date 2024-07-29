@@ -170,16 +170,16 @@ class FollowJointTrajectory():
 def main(argv):
 
     follow_joint_trajectory = FollowJointTrajectory(argv)
-    joint_states_pub_thread = threading.Thread(
-        target=follow_joint_trajectory.publish_state()
-    )
-    joint_states_pub_thread.start()
+    # joint_states_pub_thread = threading.Thread(
+    #     target=follow_joint_trajectory.publish_state()
+    # )
+    # joint_states_pub_thread.start()
 
 
     while not rospy.is_shutdown():
         rospy.spin()
 
-    joint_states_pub_thread.join()
+    # joint_states_pub_thread.join()
     follow_joint_trajectory.disconnect()
 
 
