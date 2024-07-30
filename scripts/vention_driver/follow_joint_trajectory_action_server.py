@@ -153,6 +153,9 @@ class FollowJointTrajectory():
         print("Moveit goal received!")
         pose_goal = geometry_msgs.msg.Pose()
         pose_goal.orientation.w = data.orientation.w
+        pose_goal.orientation.x = data.orientation.x
+        pose_goal.orientation.y = data.orientation.y
+        pose_goal.orientation.z = data.orientation.z
         pose_goal.position.x = data.position.x
         pose_goal.position.y = data.position.y
         pose_goal.position.z = data.position.z
